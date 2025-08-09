@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Useless Project</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #99cbfa, #f7aef8);
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      animation: bounceIn 1s ease-out;
+    }
+
+    #crazyButton {
+      padding: 15px 30px;
+      font-size: 18px;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      position: relative;
+      animation: pulseColor 2s infinite;
+    }
+
+    #crazyButton:hover {
+      animation: shake 0.5s;
+    }
+
+    .spin {
+      animation: spin 0.5s linear;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulseColor {
+      0% { box-shadow: 0 0 10px rgba(255,255,255,0.3); }
+      50% { box-shadow: 0 0 20px rgba(255,255,255,0.6); }
+      100% { box-shadow: 0 0 10px rgba(255,255,255,0.3); }
+    }
+
+    footer {
+      position: absolute;
+      bottom: 10px;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Click button to get started</h1>
+  <button id="crazyButton" class="btn btn-primary">Click Here</button>
+  <canvas id="confettiCanvas"></canvas>
+  <footer>Made with chaos and Bootstrap 💥</footer>
+
+  <script>
+    const button = document.getElementById('crazyButton');
+    const colors = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'dark'];
+
+    // Runaway behavior on hover
+    button.addEventListener('mouseenter', () => {
+      const maxX = window.innerWidth - button.offsetWidth;
+      const maxY = window.innerHeight - button.offsetHeight;
+      const randomX = Math.floor(Math.random() * maxX);
+      const randomY = Math.floor(Math.random() * maxY);
+
+      button.style.position = 'absolute';
+      button.style.left = `${randomX}px`;
+      button.style.top = `${randomY}px`;
+
+      button.classList.add('spin');
+      setTimeout(() => button.classList.remove('spin'), 500);
+    });
+
+    // Click behavior
+    button.addEventListener('click', () => {
+      // Remove existing color classes
+      colors.forEach(color => button.classList.remove(`btn-${color}`));
+
+      // Add a random color
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      button.classList.add(`btn-${randomColor}`);
+
+      // Trigger confetti
+      launchConfetti();
+    });
+
+    // Confetti burst
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    function launchConfetti() {
+      const particles = [];
+      for (let i = 0; i < 100; i++) {
+        particles.push({
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+          dx: (Math.random() - 0.5) * 10,
+          dy: (Math.random() - 0.5) * 10,
+          size: Math.random() * 5 + 2,
+          color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+          life: 100
+        });
+      }
+
+      const interval = setInterval(() => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.x += p.dx;
+          p.y += p.dy;
+          p.life -= 2;
+          ctx.fillStyle = p.color;
+          ctx.fillRect(p.x, p.y, p.size, p.size);
+        });
+        if (particles.every(p => p.life <= 0)) clearInterval(interval);
+      }, 30);
+    }
+
+    // Resize canvas on window resize
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+
+</body>
+</html>
